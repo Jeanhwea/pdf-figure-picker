@@ -1,6 +1,6 @@
 {
   "name": "pdf-figure-picker",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A web-based tool to open multi-page PDFs, crop a selected page, and download the cropped PDF",
   "author": "jeanhwea",
   "license": "MIT",
