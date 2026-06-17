@@ -78,7 +78,9 @@ export function App() {
       )
     } catch (err) {
       console.error(err)
-      alert('裁剪导出失败：' + (err instanceof Error ? err.message : '未知错误'))
+      alert(
+        '裁剪导出失败：' + (err instanceof Error ? err.message : '未知错误')
+      )
     } finally {
       setExporting(false)
     }
@@ -94,7 +96,9 @@ export function App() {
       )
     } catch (err) {
       console.error(err)
-      alert('下载本页失败：' + (err instanceof Error ? err.message : '未知错误'))
+      alert(
+        '下载本页失败：' + (err instanceof Error ? err.message : '未知错误')
+      )
     } finally {
       setExportingPage(false)
     }

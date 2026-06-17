@@ -311,7 +311,8 @@ export function CropStage({
 
   const activeBox = editBox ?? cropBox
   const isCreating = interaction.current?.mode === 'create'
-  const showHandles = !isCreating && !!activeBox && activeBox.w > 0 && activeBox.h > 0
+  const showHandles =
+    !isCreating && !!activeBox && activeBox.w > 0 && activeBox.h > 0
 
   // Handle position (center) as percentages of the box.
   const handlePos: Record<Handle, { left: string; top: string }> = {
@@ -374,7 +375,8 @@ export function CropStage({
       </div>
 
       <p className="m-0 border-t bg-card px-4 py-2 text-center text-sm text-muted-foreground">
-        在页面上拖动鼠标框选要裁剪的区域 · 拖动选框可移动，拖动控制点可调整大小 · 按住 Ctrl 滚动滚轮可缩放
+        在页面上拖动鼠标框选要裁剪的区域 · 拖动选框可移动，拖动控制点可调整大小
+        · 按住 Ctrl 滚动滚轮可缩放
       </p>
     </div>
   )
