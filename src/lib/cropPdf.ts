@@ -38,6 +38,23 @@ export async function cropPdfPage(
   return outDoc.save()
 }
 
+/**
+ * Build a single-page PDF containing the full, unmodified page from the source
+ * document.
+ */
+export async function extractPdfPage(
+  sourceBytes: ArrayBuffer | Uint8Array,
+  pageIndex: number
+): Promise<Uint8Array> {
+  const sourceDoc = await PDFDocument.load(sourceBytes)
+  const outDoc = await PDFDocument.create()
+
+  const [page] = await outDoc.copyPages(sourceDoc, [pageIndex])
+  outDoc.addPage(page)
+
+  return outDoc.save()
+}
+
 export function downloadBytes(
   bytes: Uint8Array,
   fileName: string,

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { usePdfDocument } from '@/hooks/usePdfDocument'
-import { cropPdfPage, downloadBytes, type PdfRect } from '@/lib/cropPdf'
+import { cropPdfPage, extractPdfPage, downloadBytes, type PdfRect } from '@/lib/cropPdf'
 import { Dropzone } from '@/features/Dropzone'
 import { PageThumbnail } from '@/features/PageThumbnail'
 import { CropStage } from '@/features/CropStage'
@@ -16,6 +16,7 @@ export function App() {
   const [crop, setCrop] = useState<PdfRect | null>(null)
   const [zoom, setZoom] = useState(1)
   const [exporting, setExporting] = useState(false)
+  const [exportingPage, setExportingPage] = useState(false)
 
   const zoomIn = useCallback(
     () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP)),
@@ -64,6 +65,21 @@ export function App() {
     }
   }, [pdf, crop, selectedPage])
 
+  const handleDownloadPage = useCallback(async () => {
+    if (!pdf) return
+    setExportingPage(true)
+    try {
+      const bytes = await extractPdfPage(pdf.sourceBytes, selectedPage - 1)
+      const base = pdf.fileName.replace(/\.pdf$/i, '')
+      downloadBytes(bytes, `${base}-p${selectedPage}.pdf`)
+    } catch (err) {
+      console.error(err)
+      alert('下载本页失败：' + (err instanceof Error ? err.message : '未知错误'))
+    } finally {
+      setExportingPage(false)
+    }
+  }, [pdf, selectedPage])
+
   const pageNumbers = useMemo(
     () => (pdf ? Array.from({ length: pdf.numPages }, (_, i) => i + 1) : []),
     [pdf]
@@ -105,6 +121,13 @@ export function App() {
             ＋
           </button>
         </div>
+        <button
+          className="btn"
+          disabled={exportingPage}
+          onClick={handleDownloadPage}
+        >
+          {exportingPage ? '下载中…' : '下载本页'}
+        </button>
         <button
           className="btn btn--primary"
           disabled={!crop || exporting}
