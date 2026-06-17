@@ -6,7 +6,7 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="system" storageKey="pdf-figure-picker-theme">
+    <ThemeProvider storageKey="pdf-figure-picker-theme">
       <App />
     </ThemeProvider>
   </React.StrictMode>

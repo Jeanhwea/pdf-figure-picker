@@ -60,6 +60,7 @@ export function CropStage({
   onZoomOut,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const viewportRef = useRef<PageViewport | null>(null)
   const dprRef = useRef<number>(1)
@@ -287,13 +288,26 @@ export function CropStage({
     commit(b)
   }
 
-  // Ctrl/Cmd + wheel to zoom.
-  const onWheel = (e: React.WheelEvent) => {
-    if (!e.ctrlKey && !e.metaKey) return
-    e.preventDefault()
-    if (e.deltaY < 0) onZoomIn()
-    else onZoomOut()
-  }
+  // Ctrl/Cmd + wheel to zoom. Attached natively (non-passive) so
+  // preventDefault actually blocks the browser's own zoom gesture — React's
+  // synthetic onWheel is passive and cannot cancel it.
+  const zoomInRef = useRef(onZoomIn)
+  const zoomOutRef = useRef(onZoomOut)
+  zoomInRef.current = onZoomIn
+  zoomOutRef.current = onZoomOut
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handler = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return
+      e.preventDefault()
+      if (e.deltaY < 0) zoomInRef.current()
+      else zoomOutRef.current()
+    }
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+  }, [])
 
   const activeBox = editBox ?? cropBox
   const isCreating = interaction.current?.mode === 'create'
@@ -315,7 +329,7 @@ export function CropStage({
     <div className="flex min-w-0 flex-1 flex-col" ref={containerRef}>
       <div
         className="flex min-h-0 flex-1 items-start justify-center overflow-auto p-6"
-        onWheel={onWheel}
+        ref={scrollRef}
       >
         <div
           className="relative m-auto inline-block shrink-0 leading-[0] shadow-2xl"

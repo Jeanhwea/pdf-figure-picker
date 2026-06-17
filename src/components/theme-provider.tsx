@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'dark' | 'light' | 'system'
+type Theme = 'dark' | 'light'
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -11,47 +11,51 @@ interface ThemeProviderProps {
 interface ThemeProviderState {
   theme: Theme
   setTheme: (theme: Theme) => void
+  toggleTheme: () => void
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'light',
   setTheme: () => null,
+  toggleTheme: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+function resolveInitialTheme(storageKey: string, fallback?: Theme): Theme {
+  const stored = localStorage.getItem(storageKey)
+  if (stored === 'dark' || stored === 'light') return stored
+  if (fallback) return fallback
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
+}
+
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme,
   storageKey = 'pdf-figure-picker-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  const [theme, setThemeState] = useState<Theme>(() =>
+    resolveInitialTheme(storageKey, defaultTheme)
   )
 
   useEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-      root.classList.add(systemTheme)
-      return
-    }
-
     root.classList.add(theme)
   }, [theme])
 
+  const setTheme = (next: Theme) => {
+    localStorage.setItem(storageKey, next)
+    setThemeState(next)
+  }
+
   const value: ThemeProviderState = {
     theme,
-    setTheme: (next: Theme) => {
-      localStorage.setItem(storageKey, next)
-      setThemeState(next)
-    },
+    setTheme,
+    toggleTheme: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
   }
 
   return (
