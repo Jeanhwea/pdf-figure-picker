@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PDFDocumentProxy } from '@/lib/pdfjs'
 
+import { cn } from '@/lib/utils'
+
 interface Props {
   doc: PDFDocumentProxy
   pageNumber: number
@@ -52,13 +54,23 @@ export function PageThumbnail({ doc, pageNumber, selected, onSelect }: Props) {
   return (
     <button
       type="button"
-      className={`thumb ${selected ? 'thumb--selected' : ''}`}
+      className={cn(
+        'relative block w-full rounded-lg border-2 border-transparent bg-secondary p-1.5 transition-colors hover:border-border',
+        selected && 'border-primary hover:border-primary'
+      )}
       onClick={() => onSelect(pageNumber)}
       title={`第 ${pageNumber} 页`}
     >
-      <canvas ref={canvasRef} className="thumb__canvas" />
-      {!ready && <div className="thumb__placeholder" />}
-      <span className="thumb__label">{pageNumber}</span>
+      <canvas
+        ref={canvasRef}
+        className="block h-auto w-full rounded-sm bg-white"
+      />
+      {!ready && (
+        <div className="absolute inset-1.5 rounded-sm bg-muted-foreground/20" />
+      )}
+      <span className="absolute right-2.5 bottom-2.5 rounded-full bg-black/60 px-1.5 py-px text-[11px] text-white">
+        {pageNumber}
+      </span>
     </button>
   )
 }

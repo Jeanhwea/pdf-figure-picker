@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { PageViewport, PDFDocumentProxy } from '@/lib/pdfjs'
-import type { PdfRect } from '@/lib/cropPdf'
+import type { PdfRect } from '@/lib/crop-pdf'
 
 interface Props {
   doc: PDFDocumentProxy
@@ -188,19 +188,22 @@ export function CropStage({
   const activeBox = dragBox ?? cropBox
 
   return (
-    <div className="stage" ref={containerRef}>
-      <div className="stage__scroll" onWheel={onWheel}>
-        <div className="stage__inner">
+    <div className="flex min-w-0 flex-1 flex-col" ref={containerRef}>
+      <div
+        className="flex min-h-0 flex-1 items-start justify-center overflow-auto p-6"
+        onWheel={onWheel}
+      >
+        <div className="relative m-auto inline-block shrink-0 leading-[0] shadow-2xl">
           <canvas
             ref={canvasRef}
-            className="stage__canvas"
+            className="block cursor-crosshair touch-none bg-white"
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           />
           {activeBox && activeBox.w > 0 && activeBox.h > 0 && (
             <div
-              className="stage__selection"
+              className="pointer-events-none absolute border-[1.5px] border-primary bg-primary/20"
               style={{
                 left: activeBox.x,
                 top: activeBox.y,
@@ -212,7 +215,7 @@ export function CropStage({
         </div>
       </div>
 
-      <p className="stage__hint">
+      <p className="m-0 border-t bg-card px-4 py-2 text-center text-sm text-muted-foreground">
         在页面上拖动鼠标框选要裁剪的区域 · 按住 Ctrl 滚动滚轮可缩放
       </p>
     </div>
