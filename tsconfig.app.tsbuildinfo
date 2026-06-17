@@ -1,1 +1,19 @@
-{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/app/app.tsx","./src/components/mode-toggle.tsx","./src/components/theme-provider.tsx","./src/components/ui/button.tsx","./src/components/ui/dropdown-menu.tsx","./src/features/crop-stage.tsx","./src/features/dropzone.tsx","./src/features/page-thumbnail.tsx","./src/hooks/use-pdf-document.ts","./src/lib/crop-pdf.ts","./src/lib/pdfjs.ts","./src/lib/utils.ts"],"version":"5.9.3"}
+{
+    "root": [
+        "./src/main.tsx",
+        "./src/vite-env.d.ts",
+        "./src/app/app.tsx",
+        "./src/components/mode-toggle.tsx",
+        "./src/components/theme-provider.tsx",
+        "./src/components/ui/button.tsx",
+        "./src/components/ui/dropdown-menu.tsx",
+        "./src/features/crop-stage.tsx",
+        "./src/features/dropzone.tsx",
+        "./src/features/page-thumbnail.tsx",
+        "./src/hooks/use-pdf-document.ts",
+        "./src/lib/crop-pdf.ts",
+        "./src/lib/pdfjs.ts",
+        "./src/lib/utils.ts"
+    ],
+    "version": "5.9.3"
+}
