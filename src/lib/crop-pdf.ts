@@ -72,3 +72,61 @@ export function downloadBytes(
   // Give the browser a tick to start the download before revoking.
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
+
+interface SaveFileHandle {
+  createWritable(): Promise<{
+    write(data: BufferSource): Promise<void>
+    close(): Promise<void>
+  }>
+}
+
+declare global {
+  interface Window {
+    showSaveFilePicker?(options?: {
+      suggestedName?: string
+      types?: { description?: string; accept: Record<string, string[]> }[]
+    }): Promise<SaveFileHandle>
+  }
+}
+
+/**
+ * Save bytes using the native "Save As" dialog (File System Access API) when
+ * available, so the user can choose the location and file name. Falls back to a
+ * regular browser download otherwise.
+ *
+ * The picker is opened first (while the click's user activation is still
+ * valid), and `produce` is only invoked once a destination is chosen.
+ *
+ * @returns `true` if the file was written/downloaded, `false` if the user
+ * cancelled the save dialog.
+ */
+export async function saveWithPicker(
+  suggestedName: string,
+  produce: () => Promise<Uint8Array>,
+  mimeType = 'application/pdf'
+): Promise<boolean> {
+  const picker = window.showSaveFilePicker
+  if (picker) {
+    let handle: SaveFileHandle
+    try {
+      handle = await picker({
+        suggestedName,
+        types: [{ description: 'PDF 文件', accept: { [mimeType]: ['.pdf'] } }],
+      })
+    } catch (err) {
+      // The user dismissed the dialog.
+      if (err instanceof DOMException && err.name === 'AbortError') return false
+      throw err
+    }
+    const bytes = await produce()
+    const writable = await handle.createWritable()
+    await writable.write(new Uint8Array(bytes))
+    await writable.close()
+    return true
+  }
+
+  // Fallback for browsers without the File System Access API.
+  const bytes = await produce()
+  downloadBytes(bytes, suggestedName, mimeType)
+  return true
+}

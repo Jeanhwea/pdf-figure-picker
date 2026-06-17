@@ -5,11 +5,10 @@ import { usePdfDocument } from '@/hooks/use-pdf-document'
 import {
   cropPdfPage,
   extractPdfPage,
-  downloadBytes,
+  saveWithPicker,
   type PdfRect,
 } from '@/lib/crop-pdf'
 import { Button } from '@/components/ui/button'
-import { FilenameDialog } from '@/components/filename-dialog'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Dropzone } from '@/features/dropzone'
 import { PageThumbnail } from '@/features/page-thumbnail'
@@ -26,10 +25,6 @@ export function App() {
   const [zoom, setZoom] = useState(1)
   const [exporting, setExporting] = useState(false)
   const [exportingPage, setExportingPage] = useState(false)
-  const [saveTarget, setSaveTarget] = useState<{
-    kind: 'crop' | 'page'
-    defaultName: string
-  } | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const zoomIn = useCallback(
@@ -73,54 +68,37 @@ export function App() {
     [handleFile]
   )
 
-  // Open the rename dialog instead of downloading immediately.
-  const promptDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (!pdf || !crop) return
     const base = pdf.fileName.replace(/\.pdf$/i, '')
-    setSaveTarget({ kind: 'crop', defaultName: `${base}-p${selectedPage}-cropped` })
+    setExporting(true)
+    try {
+      await saveWithPicker(`${base}-p${selectedPage}-cropped.pdf`, () =>
+        cropPdfPage(pdf.sourceBytes, selectedPage - 1, crop)
+      )
+    } catch (err) {
+      console.error(err)
+      alert('裁剪导出失败：' + (err instanceof Error ? err.message : '未知错误'))
+    } finally {
+      setExporting(false)
+    }
   }, [pdf, crop, selectedPage])
 
-  const promptDownloadPage = useCallback(() => {
+  const handleDownloadPage = useCallback(async () => {
     if (!pdf) return
     const base = pdf.fileName.replace(/\.pdf$/i, '')
-    setSaveTarget({ kind: 'page', defaultName: `${base}-p${selectedPage}` })
+    setExportingPage(true)
+    try {
+      await saveWithPicker(`${base}-p${selectedPage}.pdf`, () =>
+        extractPdfPage(pdf.sourceBytes, selectedPage - 1)
+      )
+    } catch (err) {
+      console.error(err)
+      alert('下载本页失败：' + (err instanceof Error ? err.message : '未知错误'))
+    } finally {
+      setExportingPage(false)
+    }
   }, [pdf, selectedPage])
-
-  // Run the actual export with the user-chosen file name.
-  const handleConfirmSave = useCallback(
-    async (name: string) => {
-      if (!pdf || !saveTarget) return
-      const fileName = /\.pdf$/i.test(name) ? name : `${name}.pdf`
-
-      if (saveTarget.kind === 'crop') {
-        if (!crop) return
-        setExporting(true)
-        try {
-          const bytes = await cropPdfPage(pdf.sourceBytes, selectedPage - 1, crop)
-          downloadBytes(bytes, fileName)
-          setSaveTarget(null)
-        } catch (err) {
-          console.error(err)
-          alert('裁剪导出失败：' + (err instanceof Error ? err.message : '未知错误'))
-        } finally {
-          setExporting(false)
-        }
-      } else {
-        setExportingPage(true)
-        try {
-          const bytes = await extractPdfPage(pdf.sourceBytes, selectedPage - 1)
-          downloadBytes(bytes, fileName)
-          setSaveTarget(null)
-        } catch (err) {
-          console.error(err)
-          alert('下载本页失败：' + (err instanceof Error ? err.message : '未知错误'))
-        } finally {
-          setExportingPage(false)
-        }
-      }
-    },
-    [pdf, saveTarget, crop, selectedPage]
-  )
 
   const pageNumbers = useMemo(
     () => (pdf ? Array.from({ length: pdf.numPages }, (_, i) => i + 1) : []),
@@ -179,7 +157,7 @@ export function App() {
           variant="outline"
           size="icon"
           disabled={exportingPage}
-          onClick={promptDownloadPage}
+          onClick={handleDownloadPage}
           title="下载本页"
         >
           {exportingPage ? <Loader2 className="animate-spin" /> : <FileDown />}
@@ -188,7 +166,7 @@ export function App() {
         <Button
           size="icon"
           disabled={!crop || exporting}
-          onClick={promptDownload}
+          onClick={handleDownload}
           title="下载裁剪后的 PDF"
         >
           {exporting ? <Loader2 className="animate-spin" /> : <Crop />}
@@ -239,15 +217,6 @@ export function App() {
           />
         </main>
       </div>
-
-      <FilenameDialog
-        open={!!saveTarget}
-        title={saveTarget?.kind === 'crop' ? '下载裁剪后的 PDF' : '下载本页'}
-        defaultName={saveTarget?.defaultName ?? ''}
-        busy={exporting || exportingPage}
-        onConfirm={handleConfirmSave}
-        onCancel={() => setSaveTarget(null)}
-      />
     </div>
   )
 }
