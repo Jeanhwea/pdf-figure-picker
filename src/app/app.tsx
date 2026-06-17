@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Crop, FileDown, FolderOpen, Loader2, Minus, Plus } from 'lucide-react'
 
 import { usePdfDocument } from '@/hooks/use-pdf-document'
@@ -19,12 +19,13 @@ const ZOOM_MAX = 8
 const ZOOM_STEP = 1.25
 
 export function App() {
-  const { pdf, loading, error, load, reset } = usePdfDocument()
+  const { pdf, loading, error, load } = usePdfDocument()
   const [selectedPage, setSelectedPage] = useState(1)
   const [crop, setCrop] = useState<PdfRect | null>(null)
   const [zoom, setZoom] = useState(1)
   const [exporting, setExporting] = useState(false)
   const [exportingPage, setExportingPage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const zoomIn = useCallback(
     () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP)),
@@ -51,12 +52,21 @@ export function App() {
     setZoom(1)
   }, [])
 
-  const handleClose = useCallback(() => {
-    reset()
-    setSelectedPage(1)
-    setCrop(null)
-    setZoom(1)
-  }, [reset])
+  const openFileDialog = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file && file.type === 'application/pdf') {
+        handleFile(file)
+      }
+      // Reset so picking the same file again still fires onChange.
+      e.target.value = ''
+    },
+    [handleFile]
+  )
 
   const handleDownload = useCallback(async () => {
     if (!pdf || !crop) return
@@ -163,12 +173,19 @@ export function App() {
         <Button
           variant="secondary"
           size="icon"
-          onClick={handleClose}
-          title="重新打开"
+          onClick={openFileDialog}
+          title="打开其他 PDF"
         >
           <FolderOpen />
-          <span className="sr-only">重新打开</span>
+          <span className="sr-only">打开其他 PDF</span>
         </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/pdf"
+          hidden
+          onChange={handleInputChange}
+        />
         <ModeToggle />
       </header>
 
