@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Minus, Plus } from 'lucide-react'
+import { Crop, FileDown, FolderOpen, Loader2, Minus, Plus } from 'lucide-react'
 
 import { usePdfDocument } from '@/hooks/use-pdf-document'
 import {
@@ -143,16 +143,31 @@ export function App() {
         </div>
         <Button
           variant="outline"
+          size="icon"
           disabled={exportingPage}
           onClick={handleDownloadPage}
+          title="下载本页"
         >
-          {exportingPage ? '下载中…' : '下载本页'}
+          {exportingPage ? <Loader2 className="animate-spin" /> : <FileDown />}
+          <span className="sr-only">下载本页</span>
         </Button>
-        <Button disabled={!crop || exporting} onClick={handleDownload}>
-          {exporting ? '导出中…' : '下载裁剪后的 PDF'}
+        <Button
+          size="icon"
+          disabled={!crop || exporting}
+          onClick={handleDownload}
+          title="下载裁剪后的 PDF"
+        >
+          {exporting ? <Loader2 className="animate-spin" /> : <Crop />}
+          <span className="sr-only">下载裁剪后的 PDF</span>
         </Button>
-        <Button variant="secondary" onClick={handleClose}>
-          重新打开
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={handleClose}
+          title="重新打开"
+        >
+          <FolderOpen />
+          <span className="sr-only">重新打开</span>
         </Button>
         <ModeToggle />
       </header>
