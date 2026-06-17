@@ -1,0 +1,254 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.app__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.app__file {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app__spacer {
+  flex: 1;
+}
+
+.app__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.app__sidebar {
+  width: 190px;
+  flex-shrink: 0;
+  padding: 12px;
+  overflow-y: auto;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+/* Stage */
+.stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.zoomgroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zoombtn {
+  min-width: 32px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.zoombtn:hover {
+  background: #3a3a47;
+}
+
+.zoombtn--label {
+  min-width: 56px;
+  font-size: 13px;
+}
+
+.stage__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.stage__inner {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  margin: auto;
+  line-height: 0;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.stage__canvas {
+  display: block;
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.stage__selection {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  background: rgba(76, 139, 245, 0.18);
+  pointer-events: none;
+}
+
+.stage__hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  padding: 8px 16px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+
+/* Buttons */
+.btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.btn:hover:not(:disabled) {
+  background: #3a3a47;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Landing */
+.app--empty .app__landing {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+}
+
+.dropzone {
+  width: min(560px, 90vw);
+  padding: 56px 32px;
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone--over,
+.dropzone:hover {
+  border-color: var(--accent);
+  background: var(--panel-2);
+}
+
+.dropzone__icon {
+  font-size: 48px;
+}
+
+.dropzone__title {
+  font-size: 17px;
+  margin: 14px 0 6px;
+}
+
+.dropzone__sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.dropzone__error {
+  margin-top: 14px;
+  color: #ff6b6b;
+  font-size: 13px;
+}
+
+/* Thumbnails */
+.thumb {
+  position: relative;
+  padding: 6px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--panel-2);
+  display: block;
+  width: 100%;
+}
+
+.thumb:hover {
+  border-color: var(--border);
+}
+
+.thumb--selected {
+  border-color: var(--accent);
+}
+
+.thumb__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.thumb__placeholder {
+  position: absolute;
+  inset: 6px;
+  border-radius: 4px;
+  background: #3a3a47;
+}
+
+.thumb__label {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
