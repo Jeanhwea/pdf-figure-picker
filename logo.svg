@@ -1,25 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2563eb"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
+      <stop offset="0%" stop-color="#14141f"/>
+      <stop offset="100%" stop-color="#0b0b12"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f3f6"/>
+    </linearGradient>
+    <linearGradient id="foldShadow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cropFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="0.12"/>
     </linearGradient>
   </defs>
-  <!-- Rounded square background -->
+
+  <!-- Background -->
   <rect width="128" height="128" rx="28" fill="url(#bg)"/>
-  <!-- Document body (white lines representing text) -->
-  <rect x="28" y="32" width="72" height="64" rx="6" fill="white" fill-opacity="0.15"/>
-  <!-- Text lines -->
-  <rect x="36" y="42" width="56" height="3" rx="1.5" fill="white" fill-opacity="0.9"/>
-  <rect x="36" y="50" width="48" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="58" width="52" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="66" width="44" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="74" width="50" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <!-- Selection/crop box (dashed outline over text lines) -->
-  <rect x="46" y="56" width="36" height="28" rx="3" fill="white" fill-opacity="0.2" stroke="white" stroke-width="2" stroke-dasharray="5 3"/>
-  <!-- Crop handles -->
-  <circle cx="46" cy="56" r="3" fill="white"/>
-  <circle cx="82" cy="56" r="3" fill="white"/>
-  <circle cx="46" cy="84" r="3" fill="white"/>
-  <circle cx="82" cy="84" r="3" fill="white"/>
+
+  <!-- Document page -->
+  <g>
+    <!-- Main body -->
+    <path d="M28 22 L94 22 L100 28 L100 112 L28 112 Z" fill="url(#paper)" stroke="#e2e8f0" stroke-width="0.5"/>
+    <!-- Folded corner -->
+    <path d="M94 22 L100 28 L94 28 Z" fill="#dce1e8"/>
+    <!-- Fold shadow -->
+    <path d="M94 28 L100 28 L94 22 Z" fill="url(#foldShadow)"/>
+  </g>
+
+  <!-- Text lines (unselected portion above crop) -->
+  <rect x="36" y="38" width="52" height="2" rx="1" fill="#d1d5db"/>
+  <rect x="36" y="46" width="44" height="2" rx="1" fill="#d1d5db"/>
+  <rect x="36" y="54" width="48" height="2" rx="1" fill="#d1d5db"/>
+
+  <!-- Crop selection overlay -->
+  <rect x="40" y="62" width="46" height="40" rx="2" fill="url(#cropFill)" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- Crop corner handles -->
+  <circle cx="40" cy="62" r="3.5" fill="#f97316" stroke="#fff" stroke-width="1"/>
+  <circle cx="86" cy="62" r="3.5" fill="#f97316" stroke="#fff" stroke-width="1"/>
+  <circle cx="40" cy="102" r="3.5" fill="#f97316" stroke="#fff" stroke-width="1"/>
+  <circle cx="86" cy="102" r="3.5" fill="#f97316" stroke="#fff" stroke-width="1"/>
+
+  <!-- Mountain/image icon within crop area -->
+  <g transform="translate(48, 70)" opacity="0.35">
+    <path d="M0 24 L12 8 L20 18 L26 10 L38 24 Z" stroke="#f97316" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+    <line x1="0" y1="24" x2="38" y2="24" stroke="#f97316" stroke-width="1.8"/>
+  </g>
+
+  <!-- Crop extension marks bleeding beyond document boundary -->
+  <line x1="27" y1="62" x2="40" y2="62" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+  <line x1="86" y1="62" x2="101" y2="62" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+  <line x1="40" y1="50" x2="40" y2="62" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+  <line x1="86" y1="62" x2="86" y2="102" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+  <line x1="27" y1="102" x2="40" y2="102" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+  <line x1="86" y1="102" x2="101" y2="102" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
 </svg>
