@@ -1,25 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2563eb"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
     </linearGradient>
   </defs>
-  <!-- Rounded square background -->
-  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
-  <!-- Document body (white lines representing text) -->
-  <rect x="28" y="32" width="72" height="64" rx="6" fill="white" fill-opacity="0.15"/>
-  <!-- Text lines -->
-  <rect x="36" y="42" width="56" height="3" rx="1.5" fill="white" fill-opacity="0.9"/>
-  <rect x="36" y="50" width="48" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="58" width="52" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="66" width="44" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <rect x="36" y="74" width="50" height="3" rx="1.5" fill="white" fill-opacity="0.6"/>
-  <!-- Selection/crop box (dashed outline over text lines) -->
-  <rect x="46" y="56" width="36" height="28" rx="3" fill="white" fill-opacity="0.2" stroke="white" stroke-width="2" stroke-dasharray="5 3"/>
-  <!-- Crop handles -->
-  <circle cx="46" cy="56" r="3" fill="white"/>
-  <circle cx="82" cy="56" r="3" fill="white"/>
-  <circle cx="46" cy="84" r="3" fill="white"/>
-  <circle cx="82" cy="84" r="3" fill="white"/>
+
+  <!-- Background rounded square -->
+  <rect width="128" height="128" rx="28" fill="url(#g1)"/>
+
+  <!-- Document page -->
+  <rect x="30" y="26" width="68" height="78" rx="5" fill="url(#g2)" stroke="#cbd5e1" stroke-width="1"/>
+
+  <!-- Page fold -->
+  <path d="M30 31a5 5 0 0 1 5-5h44v20a5 5 0 0 0 5 5h14v53a5 5 0 0 1-5 5H35a5 5 0 0 1-5-5V31Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <path d="M79 26v15a5 5 0 0 0 5 5h14" fill="none" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- Text lines on page -->
+  <rect x="38" y="38" width="44" height="2" rx="1" fill="#94a3b8" opacity="0.5"/>
+  <rect x="38" y="44" width="36" height="2" rx="1" fill="#94a3b8" opacity="0.5"/>
+
+  <!-- Image/figure on page -->
+  <rect x="38" y="52" width="52" height="32" rx="3" fill="url(#g3)" opacity="0.15"/>
+  <rect x="38" y="52" width="52" height="32" rx="3" stroke="url(#g3)" stroke-width="1.5"/>
+
+  <!-- Image icon inside figure -->
+  <circle cx="56" cy="66" r="4" fill="url(#g3)" opacity="0.6"/>
+  <path d="M42 79 52 69l7 7 9-9 11 12" fill="none" stroke="url(#g3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Crop selection overlay -->
+  <rect x="44" y="56" width="40" height="24" rx="2" fill="none" stroke="url(#g3)" stroke-width="2" stroke-dasharray="4 3"/>
+
+  <!-- Crop corner handles -->
+  <rect x="42" y="54" width="4" height="4" rx="1" fill="url(#g3)"/>
+  <rect x="82" y="54" width="4" height="4" rx="1" fill="url(#g3)"/>
+  <rect x="42" y="78" width="4" height="4" rx="1" fill="url(#g3)"/>
+  <rect x="82" y="78" width="4" height="4" rx="1" fill="url(#g3)"/>
+
+  <!-- Bottom text lines -->
+  <rect x="38" y="90" width="52" height="2" rx="1" fill="#94a3b8" opacity="0.5"/>
+  <rect x="38" y="96" width="40" height="2" rx="1" fill="#94a3b8" opacity="0.5"/>
+
+  <!-- Extract arrow (bottom-right) -->
+  <circle cx="100" cy="100" r="12" fill="#3b82f6"/>
+  <path d="M94 100h12m-6-6v12" stroke="white" stroke-width="2" stroke-linecap="round"/>
 </svg>
