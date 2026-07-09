@@ -7,6 +7,7 @@ import {
   saveWithPicker,
   type PdfRect,
 } from '@/lib/crop-pdf'
+import { renderPageToPng } from '@/lib/render-png'
 
 /**
  * Export helpers for the currently selected page. Each action opens the native
@@ -15,6 +16,7 @@ import {
 export function usePdfExport(pdf: LoadedPdf | null, selectedPage: number) {
   const [exportingCrop, setExportingCrop] = useState(false)
   const [exportingPage, setExportingPage] = useState(false)
+  const [exportingPng, setExportingPng] = useState(false)
 
   const baseName = pdf ? pdf.fileName.replace(/\.pdf$/i, '') : ''
 
@@ -55,5 +57,34 @@ export function usePdfExport(pdf: LoadedPdf | null, selectedPage: number) {
     }
   }, [pdf, baseName, selectedPage])
 
-  return { exportingCrop, exportingPage, downloadCrop, downloadPage }
+  const downloadPng = useCallback(
+    async (dpi: number) => {
+      if (!pdf) return
+      setExportingPng(true)
+      try {
+        await saveWithPicker(
+          `${baseName}-p${selectedPage}.png`,
+          () => renderPageToPng(pdf.doc, selectedPage, dpi),
+          'image/png'
+        )
+      } catch (err) {
+        console.error(err)
+        alert(
+          '导出 PNG 失败：' + (err instanceof Error ? err.message : '未知错误')
+        )
+      } finally {
+        setExportingPng(false)
+      }
+    },
+    [pdf, baseName, selectedPage]
+  )
+
+  return {
+    exportingCrop,
+    exportingPage,
+    exportingPng,
+    downloadCrop,
+    downloadPage,
+    downloadPng,
+  }
 }

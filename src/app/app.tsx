@@ -12,8 +12,14 @@ export function App() {
   const [selectedPage, setSelectedPage] = useState(1)
   const [crop, setCrop] = useState<PdfRect | null>(null)
   const { zoom, zoomIn, zoomOut, resetZoom } = useZoom()
-  const { exportingCrop, exportingPage, downloadCrop, downloadPage } =
-    usePdfExport(pdf, selectedPage)
+  const {
+    exportingCrop,
+    exportingPage,
+    exportingPng,
+    downloadCrop,
+    downloadPage,
+    downloadPng,
+  } = usePdfExport(pdf, selectedPage)
 
   const openFile = useCallback(
     (file: File) => {
@@ -46,6 +52,7 @@ export function App() {
       zoom={zoom}
       exportingCrop={exportingCrop}
       exportingPage={exportingPage}
+      exportingPng={exportingPng}
       onSelectPage={selectPage}
       onCropChange={setCrop}
       onZoomIn={zoomIn}
@@ -53,6 +60,7 @@ export function App() {
       onResetZoom={resetZoom}
       onDownloadCrop={() => crop && downloadCrop(crop)}
       onDownloadPage={downloadPage}
+      onDownloadPng={downloadPng}
       onFile={openFile}
     />
   )

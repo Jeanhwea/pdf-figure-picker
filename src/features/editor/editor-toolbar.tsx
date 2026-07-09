@@ -1,8 +1,18 @@
-import { Crop, FileDown, FolderOpen, Loader2, Minus, Plus } from 'lucide-react'
+import { useState } from 'react'
+import {
+  Crop,
+  FileDown,
+  FileImage,
+  FolderOpen,
+  Loader2,
+  Minus,
+  Plus,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useOpenPdf } from '@/hooks/use-open-pdf'
+import { ResolutionDialog } from '@/features/editor/resolution-dialog'
 
 interface Props {
   zoom: number
@@ -12,8 +22,10 @@ interface Props {
   hasCrop: boolean
   exportingCrop: boolean
   exportingPage: boolean
+  exportingPng: boolean
   onDownloadCrop: () => void
   onDownloadPage: () => void
+  onDownloadPng: (dpi: number) => void
   onFile: (file: File) => void
 }
 
@@ -26,11 +38,19 @@ export function EditorToolbar({
   hasCrop,
   exportingCrop,
   exportingPage,
+  exportingPng,
   onDownloadCrop,
   onDownloadPage,
+  onDownloadPng,
   onFile,
 }: Props) {
   const { open, inputProps } = useOpenPdf(onFile)
+  const [pngDialogOpen, setPngDialogOpen] = useState(false)
+
+  const handleConfirmPng = (dpi: number) => {
+    setPngDialogOpen(false)
+    onDownloadPng(dpi)
+  }
 
   return (
     <>
@@ -61,6 +81,16 @@ export function EditorToolbar({
         <span className="sr-only">下载本页</span>
       </Button>
       <Button
+        variant="outline"
+        size="icon"
+        disabled={exportingPng}
+        onClick={() => setPngDialogOpen(true)}
+        title="转为 PNG"
+      >
+        {exportingPng ? <Loader2 className="animate-spin" /> : <FileImage />}
+        <span className="sr-only">转为 PNG</span>
+      </Button>
+      <Button
         size="icon"
         disabled={!hasCrop || exportingCrop}
         onClick={onDownloadCrop}
@@ -80,6 +110,12 @@ export function EditorToolbar({
       </Button>
       <input {...inputProps} />
       <ModeToggle />
+      <ResolutionDialog
+        open={pngDialogOpen}
+        exporting={exportingPng}
+        onConfirm={handleConfirmPng}
+        onClose={() => setPngDialogOpen(false)}
+      />
     </>
   )
 }

@@ -12,6 +12,7 @@ interface Props {
   zoom: number
   exportingCrop: boolean
   exportingPage: boolean
+  exportingPng: boolean
   onSelectPage: (pageNumber: number) => void
   onCropChange: (rect: PdfRect | null) => void
   onZoomIn: () => void
@@ -19,6 +20,7 @@ interface Props {
   onResetZoom: () => void
   onDownloadCrop: () => void
   onDownloadPage: () => void
+  onDownloadPng: (dpi: number) => void
   onFile: (file: File) => void
 }
 
@@ -30,6 +32,7 @@ export function PdfEditor({
   zoom,
   exportingCrop,
   exportingPage,
+  exportingPng,
   onSelectPage,
   onCropChange,
   onZoomIn,
@@ -37,6 +40,7 @@ export function PdfEditor({
   onResetZoom,
   onDownloadCrop,
   onDownloadPage,
+  onDownloadPng,
   onFile,
 }: Props) {
   return (
@@ -57,8 +61,10 @@ export function PdfEditor({
           hasCrop={!!crop}
           exportingCrop={exportingCrop}
           exportingPage={exportingPage}
+          exportingPng={exportingPng}
           onDownloadCrop={onDownloadCrop}
           onDownloadPage={onDownloadPage}
+          onDownloadPng={onDownloadPng}
           onFile={onFile}
         />
       </AppHeader>

@@ -100,18 +100,35 @@ declare global {
  * @returns `true` if the file was written/downloaded, `false` if the user
  * cancelled the save dialog.
  */
+const FILE_TYPES: Record<
+  string,
+  { description: string; extensions: string[] }
+> = {
+  'application/pdf': { description: 'PDF 文件', extensions: ['.pdf'] },
+  'image/png': { description: 'PNG 图片', extensions: ['.png'] },
+}
+
 export async function saveWithPicker(
   suggestedName: string,
   produce: () => Promise<Uint8Array>,
   mimeType = 'application/pdf'
 ): Promise<boolean> {
   const picker = window.showSaveFilePicker
+  const fileType = FILE_TYPES[mimeType] ?? {
+    description: '文件',
+    extensions: [],
+  }
   if (picker) {
     let handle: SaveFileHandle
     try {
       handle = await picker({
         suggestedName,
-        types: [{ description: 'PDF 文件', accept: { [mimeType]: ['.pdf'] } }],
+        types: [
+          {
+            description: fileType.description,
+            accept: { [mimeType]: fileType.extensions },
+          },
+        ],
       })
     } catch (err) {
       // The user dismissed the dialog.
