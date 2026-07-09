@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useOpenPdf } from '@/hooks/use-open-pdf'
 import { ResolutionDialog } from '@/features/editor/resolution-dialog'
+import type { PDFDocumentProxy } from '@/lib/pdfjs'
 
 interface Props {
   zoom: number
@@ -23,6 +24,8 @@ interface Props {
   exportingCrop: boolean
   exportingPage: boolean
   exportingPng: boolean
+  doc: PDFDocumentProxy
+  selectedPage: number
   onDownloadCrop: () => void
   onDownloadPage: () => void
   onDownloadPng: (dpi: number) => void
@@ -39,6 +42,8 @@ export function EditorToolbar({
   exportingCrop,
   exportingPage,
   exportingPng,
+  doc,
+  selectedPage,
   onDownloadCrop,
   onDownloadPage,
   onDownloadPng,
@@ -113,6 +118,8 @@ export function EditorToolbar({
       <ResolutionDialog
         open={pngDialogOpen}
         exporting={exportingPng}
+        doc={doc}
+        pageNumber={selectedPage}
         onConfirm={handleConfirmPng}
         onClose={() => setPngDialogOpen(false)}
       />

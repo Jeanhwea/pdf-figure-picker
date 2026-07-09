@@ -2,32 +2,69 @@ import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import type { PDFDocumentProxy } from '@/lib/pdfjs'
 
 interface Props {
   open: boolean
   exporting: boolean
+  doc: PDFDocumentProxy
+  pageNumber: number
   onConfirm: (dpi: number) => void
   onClose: () => void
 }
 
 const PRESETS = [150, 300, 600, 960]
+const PDF_POINTS_PER_INCH = 72
+/** Rough PNG bytes-per-pixel for rendered figures; used only for a preview estimate. */
+const EST_BYTES_PER_PIXEL = 1.2
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`
+}
 
 /** Modal for choosing the PNG export resolution (DPI) before rendering. */
 export function ResolutionDialog({
   open,
   exporting,
+  doc,
+  pageNumber,
   onConfirm,
   onClose,
 }: Props) {
   const [dpi, setDpi] = useState(960)
+  const [pageSize, setPageSize] = useState<{
+    width: number
+    height: number
+  } | null>(null)
 
   useEffect(() => {
     if (open) setDpi(960)
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    ;(async () => {
+      const page = await doc.getPage(pageNumber)
+      const viewport = page.getViewport({ scale: 1, rotation: page.rotate })
+      if (!cancelled)
+        setPageSize({ width: viewport.width, height: viewport.height })
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [open, doc, pageNumber])
+
   if (!open) return null
 
   const valid = Number.isFinite(dpi) && dpi >= 72 && dpi <= 2400
+
+  const scale = valid ? dpi / PDF_POINTS_PER_INCH : 0
+  const pxW = pageSize ? Math.floor(pageSize.width * scale) : 0
+  const pxH = pageSize ? Math.floor(pageSize.height * scale) : 0
+  const megaPixels = (pxW * pxH) / 1_000_000
+  const estBytes = pxW * pxH * EST_BYTES_PER_PIXEL
 
   return (
     <div
@@ -68,6 +105,29 @@ export function ResolutionDialog({
               {p}
             </Button>
           ))}
+        </div>
+
+        <div className="mt-4 space-y-1 rounded-md bg-muted/50 px-3 py-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">输出分辨率</span>
+            <span className="tabular-nums">
+              {valid && pageSize ? (
+                `${pxW} × ${pxH} px`
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">预计大小</span>
+            <span className="tabular-nums">
+              {valid && pageSize ? (
+                `约 ${formatBytes(estBytes)}（${megaPixels.toFixed(1)} 百万像素）`
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
+            </span>
+          </div>
         </div>
 
         <div className="mt-5 flex justify-end gap-2">

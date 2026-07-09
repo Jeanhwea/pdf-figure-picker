@@ -62,6 +62,8 @@ export function PdfEditor({
           exportingCrop={exportingCrop}
           exportingPage={exportingPage}
           exportingPng={exportingPng}
+          doc={pdf.doc}
+          selectedPage={selectedPage}
           onDownloadCrop={onDownloadCrop}
           onDownloadPage={onDownloadPage}
           onDownloadPng={onDownloadPng}
