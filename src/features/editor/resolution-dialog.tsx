@@ -3,12 +3,14 @@ import { Loader2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import type { PDFDocumentProxy } from '@/lib/pdfjs'
+import type { PdfRect } from '@/lib/crop-pdf'
 
 interface Props {
   open: boolean
   exporting: boolean
   doc: PDFDocumentProxy
   pageNumber: number
+  crop: PdfRect | null
   onConfirm: (dpi: number) => void
   onClose: () => void
 }
@@ -27,6 +29,7 @@ export function ResolutionDialog({
   exporting,
   doc,
   pageNumber,
+  crop,
   onConfirm,
   onClose,
 }: Props) {
@@ -46,13 +49,25 @@ export function ResolutionDialog({
     ;(async () => {
       const page = await doc.getPage(pageNumber)
       const viewport = page.getViewport({ scale: 1, rotation: page.rotate })
-      if (!cancelled)
+      if (cancelled) return
+      if (crop) {
+        const [ax0, ay0] = viewport.convertToViewportPoint(crop.x, crop.y)
+        const [ax1, ay1] = viewport.convertToViewportPoint(
+          crop.x + crop.width,
+          crop.y + crop.height
+        )
+        setPageSize({
+          width: Math.abs(ax1 - ax0),
+          height: Math.abs(ay1 - ay0),
+        })
+      } else {
         setPageSize({ width: viewport.width, height: viewport.height })
+      }
     })()
     return () => {
       cancelled = true
     }
-  }, [open, doc, pageNumber])
+  }, [open, doc, pageNumber, crop])
 
   if (!open) return null
 
@@ -75,7 +90,8 @@ export function ResolutionDialog({
       >
         <h2 className="m-0 text-base font-semibold">导出为 PNG</h2>
         <p className="mt-1 mb-4 text-sm text-muted-foreground">
-          设置导出分辨率，DPI 越高图片越清晰、体积越大
+          {crop ? '将导出选中的裁剪区域，' : '将导出整页，'}
+          DPI 越高图片越清晰、体积越大
         </p>
 
         <label className="flex items-center gap-2 text-sm">

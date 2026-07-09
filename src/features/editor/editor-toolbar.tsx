@@ -15,6 +15,7 @@ import { ModeToggle } from '@/components/mode-toggle'
 import { useOpenPdf } from '@/hooks/use-open-pdf'
 import { ResolutionDialog } from '@/features/editor/resolution-dialog'
 import type { PDFDocumentProxy } from '@/lib/pdfjs'
+import type { PdfRect } from '@/lib/crop-pdf'
 
 interface Props {
   zoom: number
@@ -23,6 +24,7 @@ interface Props {
   onResetZoom: () => void
   onFitScreen: () => void
   hasCrop: boolean
+  crop: PdfRect | null
   exportingCrop: boolean
   exportingPage: boolean
   exportingPng: boolean
@@ -41,6 +43,7 @@ export function EditorToolbar({
   onResetZoom,
   onFitScreen,
   hasCrop,
+  crop,
   exportingCrop,
   exportingPage,
   exportingPng,
@@ -131,6 +134,7 @@ export function EditorToolbar({
         exporting={exportingPng}
         doc={doc}
         pageNumber={selectedPage}
+        crop={crop}
         onConfirm={handleConfirmPng}
         onClose={() => setPngDialogOpen(false)}
       />

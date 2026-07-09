@@ -54,13 +54,14 @@ export function usePdfExport(pdf: LoadedPdf | null, selectedPage: number) {
   }, [pdf, baseName, selectedPage])
 
   const downloadPng = useCallback(
-    async (dpi: number) => {
+    async (dpi: number, crop?: PdfRect | null) => {
       if (!pdf) return
       setExportingPng(true)
+      const suffix = crop ? '-cropped' : ''
       try {
         await saveWithPicker(
-          `${baseName}-p${selectedPage}.png`,
-          () => renderPageToPng(pdf.doc, selectedPage, dpi),
+          `${baseName}-p${selectedPage}${suffix}.png`,
+          () => renderPageToPng(pdf.doc, selectedPage, dpi, crop),
           'image/png'
         )
       } catch (err) {

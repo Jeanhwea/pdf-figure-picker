@@ -64,7 +64,7 @@ export function App() {
       onFitScreen={() => setFitRequest((n) => n + 1)}
       onDownloadCrop={() => crop && downloadCrop(crop)}
       onDownloadPage={downloadPage}
-      onDownloadPng={downloadPng}
+      onDownloadPng={(dpi) => downloadPng(dpi, crop)}
       onFile={openFile}
     />
   )

@@ -65,6 +65,7 @@ export function PdfEditor({
           onResetZoom={onResetZoom}
           onFitScreen={onFitScreen}
           hasCrop={!!crop}
+          crop={crop}
           exportingCrop={exportingCrop}
           exportingPage={exportingPage}
           exportingPng={exportingPng}
