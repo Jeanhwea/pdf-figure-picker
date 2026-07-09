@@ -2,11 +2,9 @@ import type { ReactNode } from 'react'
 import logoSrc from '@/assets/logo.svg'
 
 interface Props {
-  /** Content rendered after the title/version, e.g. file info and toolbar. */
   children?: ReactNode
 }
 
-/** Top application bar with the product title and version. */
 export function AppHeader({ children }: Props) {
   return (
     <header className="flex items-center gap-4 border-b bg-card px-4 py-2.5">
