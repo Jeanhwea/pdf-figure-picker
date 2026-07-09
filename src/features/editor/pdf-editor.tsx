@@ -10,6 +10,7 @@ interface Props {
   selectedPage: number
   crop: PdfRect | null
   zoom: number
+  fitRequest: number
   exportingCrop: boolean
   exportingPage: boolean
   exportingPng: boolean
@@ -18,18 +19,20 @@ interface Props {
   onZoomIn: () => void
   onZoomOut: () => void
   onResetZoom: () => void
+  onZoomTo: (zoom: number) => void
+  onFitScreen: () => void
   onDownloadCrop: () => void
   onDownloadPage: () => void
   onDownloadPng: (dpi: number) => void
   onFile: (file: File) => void
 }
 
-/** Main editing screen: header toolbar, thumbnail sidebar and crop stage. */
 export function PdfEditor({
   pdf,
   selectedPage,
   crop,
   zoom,
+  fitRequest,
   exportingCrop,
   exportingPage,
   exportingPng,
@@ -38,6 +41,8 @@ export function PdfEditor({
   onZoomIn,
   onZoomOut,
   onResetZoom,
+  onZoomTo,
+  onFitScreen,
   onDownloadCrop,
   onDownloadPage,
   onDownloadPng,
@@ -58,6 +63,7 @@ export function PdfEditor({
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}
           onResetZoom={onResetZoom}
+          onFitScreen={onFitScreen}
           hasCrop={!!crop}
           exportingCrop={exportingCrop}
           exportingPage={exportingPage}
@@ -86,9 +92,11 @@ export function PdfEditor({
             pageNumber={selectedPage}
             crop={crop}
             zoom={zoom}
+            fitRequest={fitRequest}
             onCropChange={onCropChange}
             onZoomIn={onZoomIn}
             onZoomOut={onZoomOut}
+            onZoomTo={onZoomTo}
           />
         </main>
       </div>

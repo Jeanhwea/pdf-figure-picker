@@ -5,6 +5,7 @@ import {
   FileImage,
   FolderOpen,
   Loader2,
+  Maximize,
   Minus,
   Plus,
 } from 'lucide-react'
@@ -20,6 +21,7 @@ interface Props {
   onZoomIn: () => void
   onZoomOut: () => void
   onResetZoom: () => void
+  onFitScreen: () => void
   hasCrop: boolean
   exportingCrop: boolean
   exportingPage: boolean
@@ -32,12 +34,12 @@ interface Props {
   onFile: (file: File) => void
 }
 
-/** Right-hand controls in the editor header: zoom, exports, open and theme. */
 export function EditorToolbar({
   zoom,
   onZoomIn,
   onZoomOut,
   onResetZoom,
+  onFitScreen,
   hasCrop,
   exportingCrop,
   exportingPage,
@@ -73,6 +75,15 @@ export function EditorToolbar({
         </Button>
         <Button variant="outline" size="icon" onClick={onZoomIn} title="放大">
           <Plus />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onFitScreen}
+          title="适应屏幕"
+        >
+          <Maximize />
+          <span className="sr-only">适应屏幕</span>
         </Button>
       </div>
       <Button

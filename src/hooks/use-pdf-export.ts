@@ -9,10 +9,6 @@ import {
 } from '@/lib/crop-pdf'
 import { renderPageToPng } from '@/lib/render-png'
 
-/**
- * Export helpers for the currently selected page. Each action opens the native
- * "Save As" dialog (or falls back to a download) and tracks its own busy state.
- */
 export function usePdfExport(pdf: LoadedPdf | null, selectedPage: number) {
   const [exportingCrop, setExportingCrop] = useState(false)
   const [exportingPage, setExportingPage] = useState(false)

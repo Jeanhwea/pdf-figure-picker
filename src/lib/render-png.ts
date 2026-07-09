@@ -2,11 +2,6 @@ import type { PDFDocumentProxy } from '@/lib/pdfjs'
 
 const PDF_POINTS_PER_INCH = 72
 
-/**
- * Render a single PDF page to PNG bytes at the requested resolution, mirroring
- * `pdftoppm -png -r <dpi> -singlefile`. The DPI is converted to a pdfjs render
- * scale (dpi / 72) so the output pixel dimensions match the PDF's physical size.
- */
 export async function renderPageToPng(
   doc: PDFDocumentProxy,
   pageNumber: number,

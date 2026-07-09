@@ -4,7 +4,6 @@ export const ZOOM_MIN = 0.25
 export const ZOOM_MAX = 8
 export const ZOOM_STEP = 1.25
 
-/** Manage page zoom with clamped step in/out and a reset to 100%. */
 export function useZoom(initial = 1) {
   const [zoom, setZoom] = useState(initial)
 
@@ -17,6 +16,10 @@ export function useZoom(initial = 1) {
     []
   )
   const resetZoom = useCallback(() => setZoom(1), [])
+  const zoomTo = useCallback(
+    (z: number) => setZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z))),
+    []
+  )
 
-  return { zoom, zoomIn, zoomOut, resetZoom }
+  return { zoom, zoomIn, zoomOut, resetZoom, zoomTo }
 }

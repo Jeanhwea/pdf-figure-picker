@@ -1,9 +1,5 @@
 import { useCallback, useRef } from 'react'
 
-/**
- * Encapsulate a hidden file input for opening PDFs. Spread `inputProps` onto a
- * hidden `<input>` and call `open()` (e.g. from a button) to show the picker.
- */
 export function useOpenPdf(onFile: (file: File) => void) {
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -15,7 +11,6 @@ export function useOpenPdf(onFile: (file: File) => void) {
       if (file && file.type === 'application/pdf') {
         onFile(file)
       }
-      // Reset so picking the same file again still fires onChange.
       e.target.value = ''
     },
     [onFile]

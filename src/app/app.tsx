@@ -11,7 +11,8 @@ export function App() {
   const { pdf, loading, error, load } = usePdfDocument()
   const [selectedPage, setSelectedPage] = useState(1)
   const [crop, setCrop] = useState<PdfRect | null>(null)
-  const { zoom, zoomIn, zoomOut, resetZoom } = useZoom()
+  const [fitRequest, setFitRequest] = useState(0)
+  const { zoom, zoomIn, zoomOut, resetZoom, zoomTo } = useZoom()
   const {
     exportingCrop,
     exportingPage,
@@ -50,6 +51,7 @@ export function App() {
       selectedPage={selectedPage}
       crop={crop}
       zoom={zoom}
+      fitRequest={fitRequest}
       exportingCrop={exportingCrop}
       exportingPage={exportingPage}
       exportingPng={exportingPng}
@@ -58,6 +60,8 @@ export function App() {
       onZoomIn={zoomIn}
       onZoomOut={zoomOut}
       onResetZoom={resetZoom}
+      onZoomTo={zoomTo}
+      onFitScreen={() => setFitRequest((n) => n + 1)}
       onDownloadCrop={() => crop && downloadCrop(crop)}
       onDownloadPage={downloadPage}
       onDownloadPng={downloadPng}

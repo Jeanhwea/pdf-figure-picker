@@ -7,9 +7,11 @@ interface Props {
   pageNumber: number
   crop: PdfRect | null
   zoom: number
+  fitRequest: number
   onCropChange: (rect: PdfRect | null) => void
   onZoomIn: () => void
   onZoomOut: () => void
+  onZoomTo: (zoom: number) => void
 }
 
 interface Box {
@@ -55,37 +57,41 @@ export function CropStage({
   pageNumber,
   crop,
   zoom,
+  fitRequest,
   onCropChange,
   onZoomIn,
   onZoomOut,
+  onZoomTo,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const viewportRef = useRef<PageViewport | null>(null)
   const dprRef = useRef<number>(1)
+  const baseSizeRef = useRef<{ width: number; height: number } | null>(null)
 
   const [containerWidth, setContainerWidth] = useState(0)
+  const [containerHeight, setContainerHeight] = useState(0)
   const [renderTick, setRenderTick] = useState(0)
 
-  // Transient box (CSS px) shown while the user draws, moves, or resizes.
   const [editBox, setEditBox] = useState<Box | null>(null)
   const interaction = useRef<Interaction | null>(null)
 
-  // Track available width so the page can fit on first render.
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width ?? 0
       if (w > 0) setContainerWidth(w)
+      const h = scrollRef.current?.clientHeight ?? 0
+      if (h > 0) setContainerHeight(h)
     })
     ro.observe(el)
     setContainerWidth(el.clientWidth)
+    setContainerHeight(scrollRef.current?.clientHeight ?? 0)
     return () => ro.disconnect()
   }, [])
 
-  // Render the selected page at the current zoom level.
   useEffect(() => {
     if (containerWidth <= 0) return
     let cancelled = false
@@ -96,7 +102,7 @@ export function CropStage({
       if (cancelled) return
 
       const base = page.getViewport({ scale: 1, rotation: page.rotate })
-      // Available width minus stage padding, used as the "fit" baseline.
+      baseSizeRef.current = { width: base.width, height: base.height }
       const fitScale = Math.max((containerWidth - 48) / base.width, 0.05)
       const dpr = window.devicePixelRatio || 1
       dprRef.current = dpr
@@ -122,7 +128,7 @@ export function CropStage({
         await (renderTask as unknown as { promise: Promise<void> }).promise
         if (!cancelled) setRenderTick((t) => t + 1)
       } catch {
-        /* render cancelled */
+        void 0
       }
     })()
 
@@ -132,9 +138,17 @@ export function CropStage({
     }
   }, [doc, pageNumber, containerWidth, zoom])
 
-  // Persisted selection rectangle, derived from the PDF-space crop so it stays
-  // correct across zoom changes. eslint: renderTick keeps it in sync with the
-  // latest viewport stored in the ref.
+  useEffect(() => {
+    if (fitRequest === 0) return
+    const base = baseSizeRef.current
+    if (!base || containerWidth <= 0 || containerHeight <= 0) return
+    const fitScale = Math.max((containerWidth - 48) / base.width, 0.05)
+    const pageHeightAtFit = base.height * fitScale
+    const availableHeight = containerHeight - 48
+    const nextZoom = Math.min(1, availableHeight / pageHeightAtFit)
+    onZoomTo(nextZoom)
+  }, [fitRequest])
+
   const cropBox = useMemo<Box | null>(() => {
     const viewport = viewportRef.current
     if (!crop || !viewport) return null
@@ -166,7 +180,6 @@ export function CropStage({
     return { w: r.width, h: r.height }
   }, [])
 
-  // Convert a CSS-pixel box to a PDF-space rect and notify the parent.
   const commit = useCallback(
     (b: Box | null) => {
       const viewport = viewportRef.current
@@ -190,7 +203,6 @@ export function CropStage({
     [onCropChange]
   )
 
-  // Start moving the existing selection (drag inside the box).
   const startMove = (e: React.PointerEvent) => {
     const box = editBox ?? cropBox
     if (!box) return
@@ -205,7 +217,6 @@ export function CropStage({
     ;(e.target as Element).setPointerCapture(e.pointerId)
   }
 
-  // Start resizing from a specific handle.
   const startResize = (e: React.PointerEvent, handle: Handle) => {
     const box = editBox ?? cropBox
     if (!box) return
@@ -221,7 +232,6 @@ export function CropStage({
     ;(e.target as Element).setPointerCapture(e.pointerId)
   }
 
-  // Start drawing a brand-new selection on the empty page area.
   const onCanvasPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return
     const p = toLocal(e)
@@ -256,7 +266,6 @@ export function CropStage({
       return
     }
 
-    // resize
     const { startBox, bounds, handle } = it
     let left = startBox.x
     let top = startBox.y
@@ -288,9 +297,6 @@ export function CropStage({
     commit(b)
   }
 
-  // Ctrl/Cmd + wheel to zoom. Attached natively (non-passive) so
-  // preventDefault actually blocks the browser's own zoom gesture — React's
-  // synthetic onWheel is passive and cannot cancel it.
   const zoomInRef = useRef(onZoomIn)
   const zoomOutRef = useRef(onZoomOut)
   zoomInRef.current = onZoomIn
@@ -314,7 +320,6 @@ export function CropStage({
   const showHandles =
     !isCreating && !!activeBox && activeBox.w > 0 && activeBox.h > 0
 
-  // Handle position (center) as percentages of the box.
   const handlePos: Record<Handle, { left: string; top: string }> = {
     nw: { left: '0%', top: '0%' },
     n: { left: '50%', top: '0%' },

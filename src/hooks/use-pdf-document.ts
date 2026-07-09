@@ -5,7 +5,6 @@ export interface LoadedPdf {
   doc: PDFDocumentProxy
   numPages: number
   fileName: string
-  /** Untouched copy of the original bytes, kept for pdf-lib export. */
   sourceBytes: Uint8Array
 }
 
@@ -21,7 +20,6 @@ export function usePdfDocument() {
       const buffer = await file.arrayBuffer()
       const sourceBytes = new Uint8Array(buffer)
 
-      // pdfjs may detach the buffer it receives, so hand it a private copy.
       const doc = await pdfjsLib.getDocument({ data: sourceBytes.slice() })
         .promise
 

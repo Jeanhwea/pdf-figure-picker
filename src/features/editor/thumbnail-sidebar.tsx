@@ -8,7 +8,6 @@ interface Props {
   onSelectPage: (pageNumber: number) => void
 }
 
-/** Scrollable list of page thumbnails for navigating the document. */
 export function ThumbnailSidebar({
   doc,
   numPages,

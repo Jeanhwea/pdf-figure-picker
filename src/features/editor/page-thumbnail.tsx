@@ -41,7 +41,7 @@ export function PageThumbnail({ doc, pageNumber, selected, onSelect }: Props) {
         await (renderTask as unknown as { promise: Promise<void> }).promise
         if (!cancelled) setReady(true)
       } catch {
-        /* render cancelled */
+        void 0
       }
     })()
 

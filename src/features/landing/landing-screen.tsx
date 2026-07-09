@@ -8,7 +8,6 @@ interface Props {
   onFile: (file: File) => void
 }
 
-/** Empty state shown before a PDF is opened. */
 export function LandingScreen({ loading, error, onFile }: Props) {
   return (
     <div className="flex h-full flex-col">

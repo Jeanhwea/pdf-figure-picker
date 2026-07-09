@@ -15,7 +15,6 @@ interface Props {
 
 const PRESETS = [150, 300, 600, 960]
 const PDF_POINTS_PER_INCH = 72
-/** Rough PNG bytes-per-pixel for rendered figures; used only for a preview estimate. */
 const EST_BYTES_PER_PIXEL = 1.2
 
 function formatBytes(bytes: number): string {
@@ -23,7 +22,6 @@ function formatBytes(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`
 }
 
-/** Modal for choosing the PNG export resolution (DPI) before rendering. */
 export function ResolutionDialog({
   open,
   exporting,

@@ -1,19 +1,12 @@
 import { PDFDocument } from 'pdf-lib'
 
 export interface PdfRect {
-  /** Lower-left X in unrotated PDF user-space points. */
   x: number
-  /** Lower-left Y in unrotated PDF user-space points. */
   y: number
   width: number
   height: number
 }
 
-/**
- * Build a single-page PDF containing only the cropped region of one page from
- * the source document. Coordinates are in unrotated PDF user space (points),
- * matching what `PageViewport.convertToPdfPoint` returns.
- */
 export async function cropPdfPage(
   sourceBytes: ArrayBuffer | Uint8Array,
   pageIndex: number,
@@ -30,18 +23,12 @@ export async function cropPdfPage(
   const width = Math.round(rect.width * 100) / 100
   const height = Math.round(rect.height * 100) / 100
 
-  // Setting both boxes makes the page geometry equal the cropped region while
-  // keeping any existing page rotation metadata intact.
   page.setMediaBox(x, y, width, height)
   page.setCropBox(x, y, width, height)
 
   return outDoc.save()
 }
 
-/**
- * Build a single-page PDF containing the full, unmodified page from the source
- * document.
- */
 export async function extractPdfPage(
   sourceBytes: ArrayBuffer | Uint8Array,
   pageIndex: number
@@ -69,7 +56,6 @@ export function downloadBytes(
   document.body.appendChild(a)
   a.click()
   a.remove()
-  // Give the browser a tick to start the download before revoking.
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
@@ -89,17 +75,6 @@ declare global {
   }
 }
 
-/**
- * Save bytes using the native "Save As" dialog (File System Access API) when
- * available, so the user can choose the location and file name. Falls back to a
- * regular browser download otherwise.
- *
- * The picker is opened first (while the click's user activation is still
- * valid), and `produce` is only invoked once a destination is chosen.
- *
- * @returns `true` if the file was written/downloaded, `false` if the user
- * cancelled the save dialog.
- */
 const FILE_TYPES: Record<
   string,
   { description: string; extensions: string[] }
@@ -131,7 +106,6 @@ export async function saveWithPicker(
         ],
       })
     } catch (err) {
-      // The user dismissed the dialog.
       if (err instanceof DOMException && err.name === 'AbortError') return false
       throw err
     }
@@ -142,7 +116,6 @@ export async function saveWithPicker(
     return true
   }
 
-  // Fallback for browsers without the File System Access API.
   const bytes = await produce()
   downloadBytes(bytes, suggestedName, mimeType)
   return true
